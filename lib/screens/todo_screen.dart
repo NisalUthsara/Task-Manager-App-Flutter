@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app_flutter/widgets/todo_card.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -66,8 +67,9 @@ class _TodoScreenState extends State<TodoScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 60),
               //tasks panel goes here
-              Expanded(child: ListView()),
+              Expanded(child: ListView(children: [TodoCard(isMarked: true)])),
             ],
           ),
         ),
