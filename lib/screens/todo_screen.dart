@@ -9,6 +9,20 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
+  final textInputController = TextEditingController();
+  List<String> _tasks = [];
+  List<bool> _completed = [];
+
+  void _addTask() {
+    if (textInputController.text.isNotEmpty) {
+      setState(() {
+        _tasks.add(textInputController.text);
+        _completed.add(false);
+      });
+        textInputController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +62,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: textInputController,
                         style: const TextStyle(color: Colors.white),
                         decoration: InputDecoration(
                           hintText: 'Add a task',
@@ -56,12 +71,13 @@ class _TodoScreenState extends State<TodoScreen> {
                             horizontal: 10,
                           ),
                         ),
+                        onSubmitted: (_) => _addTask(),
                       ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.add, color: Colors.white),
                       onPressed: () {
-                        // Add task logic here
+                        _addTask();
                       },
                     ),
                   ],
@@ -69,7 +85,25 @@ class _TodoScreenState extends State<TodoScreen> {
               ),
               const SizedBox(height: 60),
               //tasks panel goes here
-              Expanded(child: ListView(children: [TodoCard(isMarked: true)])),
+              Expanded(
+                child: _tasks.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No tasks yet!\nAdd some tasks.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 18, color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _tasks.length,
+                        itemBuilder: (context, index) {
+                          return TodoCard(
+                            isMarked: _completed[index],
+                            title: _tasks[index],
+                          );
+                        },
+                      ),
+              ),
             ],
           ),
         ),

@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 
 class TodoCard extends StatelessWidget {
+  final String title;
   final bool isMarked;
 
-  const TodoCard({super.key, required this.isMarked});
+  const TodoCard({super.key, required this.isMarked, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: Colors.orange,
       child: Padding(
-        padding: EdgeInsetsGeometry.all(20),
+        padding: EdgeInsets.all(20),
         child: ListTile(
           leading: Checkbox(value: isMarked, onChanged: (value) {}),
           title: Text(
-            'Your task name',
+            title,
             style: TextStyle(
               fontSize: 16,
               decoration: isMarked
