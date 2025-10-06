@@ -3,17 +3,25 @@ import 'package:flutter/material.dart';
 class TodoCard extends StatelessWidget {
   final String title;
   final bool isMarked;
+  final VoidCallback onToggle;
+  final VoidCallback onDelete;
 
-  const TodoCard({super.key, required this.isMarked, required this.title});
+  const TodoCard({
+    super.key,
+    required this.title,
+    required this.isMarked,
+    required this.onToggle,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.orange,
+      color: isMarked ? Colors.green : Colors.orange,
       child: Padding(
         padding: EdgeInsets.all(20),
         child: ListTile(
-          leading: Checkbox(value: isMarked, onChanged: (value) {}),
+          leading: Checkbox(value: isMarked, onChanged: (_) => onToggle()),
           title: Text(
             title,
             style: TextStyle(
@@ -25,7 +33,7 @@ class TodoCard extends StatelessWidget {
           ),
           trailing: IconButton(
             icon: const Icon(Icons.delete, color: Colors.redAccent, size: 25),
-            onPressed: () => {},
+            onPressed: () => {onDelete()},
           ),
         ),
       ),

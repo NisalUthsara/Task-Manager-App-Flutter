@@ -19,8 +19,21 @@ class _TodoScreenState extends State<TodoScreen> {
         _tasks.add(textInputController.text);
         _completed.add(false);
       });
-        textInputController.clear();
+      textInputController.clear();
     }
+  }
+
+  void _toggleTask(int index) {
+    setState(() {
+      _completed[index] = !_completed[index];
+    });
+  }
+
+  void _deleteTask(int index) {
+    setState(() {
+      _tasks.removeAt(index);
+      _completed.removeAt(index);
+    });
   }
 
   @override
@@ -76,9 +89,7 @@ class _TodoScreenState extends State<TodoScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.add, color: Colors.white),
-                      onPressed: () {
-                        _addTask();
-                      },
+                      onPressed: _addTask,
                     ),
                   ],
                 ),
@@ -98,8 +109,10 @@ class _TodoScreenState extends State<TodoScreen> {
                         itemCount: _tasks.length,
                         itemBuilder: (context, index) {
                           return TodoCard(
-                            isMarked: _completed[index],
                             title: _tasks[index],
+                            isMarked: _completed[index],
+                            onToggle: () => _toggleTask(index),
+                            onDelete: () => _deleteTask(index),
                           );
                         },
                       ),
