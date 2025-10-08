@@ -101,6 +101,37 @@ class _TodoScreenState extends State<TodoScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+
+              Container(
+                width: double.infinity,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 3,
+                      blurRadius: 16,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Total: ${_tasks.length}'),
+                    Text(
+                      'Completed: ${_completed.where((task) => task == true).length}',
+                    ),
+                    Text(
+                      'Pending: ${_completed.where((task) => task == false).length}',
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 60),
               //tasks panel goes here
               Expanded(
