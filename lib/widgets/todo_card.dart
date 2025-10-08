@@ -19,7 +19,7 @@ class TodoCard extends StatelessWidget {
     return Card(
       color: isMarked ? Colors.green : Colors.orange,
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(10),
         child: ListTile(
           leading: Checkbox(value: isMarked, onChanged: (_) => onToggle()),
           title: Text(

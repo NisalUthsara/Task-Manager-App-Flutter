@@ -36,6 +36,13 @@ class _TodoScreenState extends State<TodoScreen> {
     });
   }
 
+  void _clearAll() {
+    setState(() {
+      _tasks.clear();
+      _completed.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,6 +128,24 @@ class _TodoScreenState extends State<TodoScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: _tasks.isNotEmpty
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: _clearAll,
+                    child: Text('Clear All'),
+                  ),
+                ],
+              ),
+            )
+          : null,
     );
   }
 }
