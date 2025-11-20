@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:task_manager_app_flutter/theme.dart';
 import 'package:task_manager_app_flutter/widgets/todo_card.dart';
 
 class TodoScreen extends StatefulWidget {
@@ -47,13 +49,9 @@ class _TodoScreenState extends State<TodoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Work For Your Success',
-          style: TextStyle(
-            fontSize: 32,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.bold,
-          ),
+          style: GoogleFonts.quicksand(textStyle: TextStyle(fontSize: 32)),
         ),
       ),
       body: Center(
@@ -67,7 +65,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 height: 60,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 43, 43, 43),
+                  color: AppTheme.primaryBlack,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
@@ -107,7 +105,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 width: double.infinity,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: Colors.orangeAccent,
+                  color: AppTheme.primaryOrange,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
                     BoxShadow(
