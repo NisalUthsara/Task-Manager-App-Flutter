@@ -10,7 +10,7 @@ class AppTheme {
   static ThemeData apptheme = ThemeData(
     textTheme: TextTheme(
       displayLarge: GoogleFonts.russoOne(
-        fontSize: 100,
+        fontSize: 90,
         fontWeight: FontWeight.bold,
       ),
       titleLarge: GoogleFonts.russoOne(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app_flutter/theme.dart';
 
 class ScreenTwo extends StatelessWidget {
   const ScreenTwo({super.key});
@@ -6,9 +7,8 @@ class ScreenTwo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: const Text('Screen Two'),
-      ),
+      backgroundColor: AppTheme.primaryOrange,
+      body: Center(child: const Text('Screen Two')),
     );
   }
 }
