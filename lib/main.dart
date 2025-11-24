@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager_app_flutter/screens/onboarding/onboard.dart';
 import 'package:task_manager_app_flutter/screens/todo_screen.dart';
+import 'package:task_manager_app_flutter/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +15,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      home: TodoScreen(),
+      theme: AppTheme.apptheme,
+      home: Onboard(),
     );
   }
 }

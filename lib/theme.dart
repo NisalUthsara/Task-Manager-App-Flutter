@@ -9,7 +9,11 @@ class AppTheme {
 
   static ThemeData apptheme = ThemeData(
     textTheme: TextTheme(
-      titleLarge : GoogleFonts.russoOne(
+      displayLarge: GoogleFonts.russoOne(
+        fontSize: 100,
+        fontWeight: FontWeight.bold,
+      ),
+      titleLarge: GoogleFonts.russoOne(
         fontSize: 32,
         fontWeight: FontWeight.bold,
       ),
@@ -17,15 +21,11 @@ class AppTheme {
         fontSize: 20,
         fontWeight: FontWeight.normal,
       ),
-      bodyLarge: GoogleFonts.outfit(
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-      ),
+      bodyLarge: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold),
       bodyMedium: GoogleFonts.outfit(
         fontSize: 12,
         fontWeight: FontWeight.normal,
       ),
     ),
   );
-
 }
