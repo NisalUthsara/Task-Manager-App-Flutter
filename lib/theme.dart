@@ -14,16 +14,19 @@ class AppTheme {
         fontWeight: FontWeight.bold,
       ),
       titleLarge: GoogleFonts.russoOne(
-        fontSize: 32,
+        fontSize: 54,
         fontWeight: FontWeight.bold,
       ),
       titleMedium: GoogleFonts.russoOne(
+        fontSize: 34,
+        fontWeight: FontWeight.normal,
+      ),
+      bodyLarge: GoogleFonts.outfit(
         fontSize: 20,
         fontWeight: FontWeight.normal,
       ),
-      bodyLarge: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold),
       bodyMedium: GoogleFonts.outfit(
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: FontWeight.normal,
       ),
     ),

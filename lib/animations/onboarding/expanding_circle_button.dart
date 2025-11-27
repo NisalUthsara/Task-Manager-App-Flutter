@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager_app_flutter/theme.dart';
+import 'dart:math';
 
 class ExpandingCircleButton extends StatefulWidget {
   final VoidCallback onComplete;
@@ -13,8 +14,8 @@ class ExpandingCircleButton extends StatefulWidget {
 class _ExpandingCircleButtonState extends State<ExpandingCircleButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _animation;
-  bool _startAnimation = false;
+  late Animation<double> _sizeAnimation;
+  late Animation<double> _opacityAnimation;
 
   // Button properties
   static const double buttonSize = 72.0; // Total button size (padding + icon)
@@ -28,11 +29,6 @@ class _ExpandingCircleButtonState extends State<ExpandingCircleButton>
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-
-    _animation = Tween<double>(
-      begin: buttonSize,
-      end: 3000,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -48,55 +44,61 @@ class _ExpandingCircleButtonState extends State<ExpandingCircleButton>
   }
 
   void _handleTap() {
-    setState(() => _startAnimation = true);
     _controller.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        if (_startAnimation)
-          AnimatedBuilder(
-            animation: _animation,
-            builder: (context, child) {
-              final circleSize = _animation.value;
-              // Calculate how much to offset to keep circle centered on button
-              final offset = (circleSize - buttonSize) / 2;
+    final screenSize = MediaQuery.of(context).size;
 
-              return Positioned(
-                bottom: buttonBottom - offset,
-                right: buttonRight - offset,
-                child: Container(
-                  width: circleSize,
-                  height: circleSize,
-                  decoration: const BoxDecoration(
-                    color: AppTheme.primaryOrange,
-                    shape: BoxShape.circle,
+    final double maxDimensions =
+        sqrt(pow(screenSize.width, 2) + pow(screenSize.height, 2)) * 2;
+
+    _sizeAnimation = Tween<double>(
+      begin: buttonSize,
+      end: maxDimensions,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.3)),
+    );
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          bottom: buttonBottom,
+          right: buttonRight,
+          width: buttonSize,
+          height: buttonSize,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return OverflowBox(
+                maxWidth: maxDimensions,
+                maxHeight: maxDimensions,
+                minWidth: 0,
+                minHeight: 0,
+                child: GestureDetector(
+                  onTap: _handleTap,
+                  child: Container(
+                    width: _sizeAnimation.value,
+                    height: _sizeAnimation.value,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.primaryOrange,
+                    ),
+                    alignment: Alignment.center,
+                    child: Opacity(
+                      opacity: _opacityAnimation.value,
+                      child: const Icon(Icons.arrow_forward),
+                    ),
                   ),
                 ),
               );
             },
           ),
-        if (!_startAnimation)
-          Positioned(
-            bottom: buttonBottom,
-            right: buttonRight,
-            child: ElevatedButton(
-              onPressed: _handleTap,
-              style: ElevatedButton.styleFrom(
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(24),
-                backgroundColor: AppTheme.primaryOrange,
-                elevation: 8,
-              ),
-              child: const Icon(
-                Icons.arrow_forward,
-                size: 32,
-                color: AppTheme.secondaryLightGray,
-              ),
-            ),
-          ),
+        ),
       ],
     );
   }
