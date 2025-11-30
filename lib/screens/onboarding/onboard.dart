@@ -39,7 +39,7 @@ class _OnboardState extends State<Onboard> {
         children: [
           PageView(
             controller: _controller,
-            // physics: const NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               ScreenOne(onNext: nextPage),
               const ScreenTwo(),
