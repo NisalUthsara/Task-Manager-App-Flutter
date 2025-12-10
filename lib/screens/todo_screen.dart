@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:task_manager_app_flutter/theme.dart';
-import 'package:task_manager_app_flutter/widgets/todo_card.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -11,170 +9,218 @@ class TodoScreen extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreen> {
-  final textInputController = TextEditingController();
-  List<String> _tasks = [];
-  List<bool> _completed = [];
+  int? _expandedIndex;
 
-  void _addTask() {
-    if (textInputController.text.isNotEmpty) {
-      setState(() {
-        _tasks.add(textInputController.text);
-        _completed.add(false);
-      });
-      textInputController.clear();
-    }
-  }
+  final int _cardCount = 7;
 
-  void _toggleTask(int index) {
-    setState(() {
-      _completed[index] = !_completed[index];
-    });
-  }
-
-  void _deleteTask(int index) {
-    setState(() {
-      _tasks.removeAt(index);
-      _completed.removeAt(index);
-    });
-  }
-
-  void _clearAll() {
-    setState(() {
-      _tasks.clear();
-      _completed.clear();
-    });
-  }
+  final List<String> _cardNames = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Work For Your Success',
-          style: GoogleFonts.quicksand(textStyle: TextStyle(fontSize: 32)),
+      backgroundColor: AppTheme.primaryBlack,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // --- Header ---
+            SizedBox(
+              height: 110,
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  '2025,\nSEP, 1st Week',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppTheme.secondaryLightGray,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                  ),
+                ),
+              ),
+            ),
+
+            // --- Responsive Stack Area ---
+            // Expanded takes up ALL remaining vertical space.
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // We get the exact height available for the cards
+                  double availableHeight = constraints.maxHeight;
+
+                  // DYNAMIC SIZING CALCULATIONS:
+                  // 1. Calculate offset to ensure all 7 cards fit exactly in the space
+                  //    We divide by slightly more than card count to leave a gap at the top.
+                  double verticalOffset = availableHeight / (_cardCount + 1);
+
+                  // 2. Dynamic card heights based on screen size
+                  double standardHeight =
+                      availableHeight * 0.20; // ~25% of screen
+                  double expandedHeight =
+                      availableHeight * 0.45; // ~55% of screen
+
+                  return GestureDetector(
+                    onTap: () => setState(() => _expandedIndex = null),
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      clipBehavior: Clip.none,
+                      children: List.generate(_cardCount, (index) {
+                        return _buildResponsiveCard(
+                          index,
+                          verticalOffset,
+                          standardHeight,
+                          expandedHeight,
+                        );
+                      }),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //Top tasks adding container
-              Container(
-                height: 60,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryBlack,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 3,
-                      blurRadius: 16,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: textInputController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: 'Add a task',
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                          ),
-                        ),
-                        onSubmitted: (_) => _addTask(),
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white),
-                      onPressed: _addTask,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
+    );
+  }
 
-              Container(
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryOrange,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 3,
-                      blurRadius: 16,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Total: ${_tasks.length}'),
-                    Text(
-                      'Completed: ${_completed.where((task) => task == true).length}',
-                    ),
-                    Text(
-                      'Pending: ${_completed.where((task) => task == false).length}',
-                    ),
-                  ],
-                ),
-              ),
+  Widget _buildResponsiveCard(
+    int index,
+    double verticalOffset,
+    double standardHeight,
+    double expandedHeight,
+  ) {
+    final bool isExpanded = (index == _expandedIndex);
 
-              const SizedBox(height: 60),
-              //tasks panel goes here
-              Expanded(
-                child: _tasks.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No tasks yet!\nAdd some tasks.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 18, color: Colors.grey),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: _tasks.length,
-                        itemBuilder: (context, index) {
-                          return TodoCard(
-                            title: _tasks[index],
-                            isMarked: _completed[index],
-                            onToggle: () => _toggleTask(index),
-                            onDelete: () => _deleteTask(index),
-                          );
-                        },
-                      ),
+    // INVERTED LOGIC:
+    double reversedIndex = (_cardCount - 1 - index).toDouble();
+    double bottomPosition = reversedIndex * verticalOffset;
+
+    // ANIMATION LOGIC:
+    // If a card is expanded, push cards ABOVE it (visually higher) further up.
+    if (_expandedIndex != null && index < _expandedIndex!) {
+      // We push them up by the difference in height, minus a little overlap adjustment
+      bottomPosition += (expandedHeight - standardHeight);
+    }
+
+    return AnimatedPositioned(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      // We use 'bottom' instead of 'top'
+      bottom: bottomPosition,
+      left: 0,
+      right: 0,
+      height: isExpanded ? expandedHeight : standardHeight,
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _expandedIndex = (_expandedIndex == index) ? null : index;
+          });
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            color: isExpanded
+                ? AppTheme.primaryOrange
+                : AppTheme.secondaryDarkGray,
+            // Rounded corners on top only creates the file-folder look
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                blurRadius: 10,
+                offset: const Offset(0, -5), // Shadow upwards
               ),
             ],
           ),
-        ),
-      ),
-      bottomNavigationBar: _tasks.isNotEmpty
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _cardNames[index],
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: isExpanded
+                        ? AppTheme.secondaryDarkGray
+                        : AppTheme.primaryOrange,
+                  ),
+                ),
+                if (isExpanded) ...[
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildDummyTaskItem(
+                            "Meeting with Design Team",
+                            "10:00 AM",
+                          ),
+                          _buildDummyTaskItem("Lunch Break", "01:00 PM"),
+                          _buildDummyTaskItem(
+                            "Flutter Project Review",
+                            "03:30 PM",
+                          ),
+                          _buildDummyTaskItem("Gym", "06:00 PM"),
+                        ],
+                      ),
                     ),
-                    onPressed: _clearAll,
-                    child: Text('Clear All'),
                   ),
                 ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDummyTaskItem(String title, String time) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            size: 20,
+            color: AppTheme.secondaryDarkGray,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppTheme.secondaryDarkGray,
               ),
-            )
-          : null,
+            ),
+          ),
+          Text(
+            time,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppTheme.secondaryDarkGray.withOpacity(0.6),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
