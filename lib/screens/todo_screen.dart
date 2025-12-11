@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:task_manager_app_flutter/theme.dart';
 
 class TodoScreen extends StatefulWidget {
@@ -25,6 +26,11 @@ class _TodoScreenState extends State<TodoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+
+    String readableYear = DateFormat('yyyy').format(now);
+    String readableDate = DateFormat('MMMM d').format(now);
+
     return Scaffold(
       backgroundColor: AppTheme.primaryBlack,
       body: SafeArea(
@@ -37,7 +43,7 @@ class _TodoScreenState extends State<TodoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  '2025,\nSEP, 1st Week',
+                  '$readableYear, \n$readableDate',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppTheme.secondaryLightGray,
                     fontWeight: FontWeight.bold,
