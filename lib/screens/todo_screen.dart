@@ -29,11 +29,14 @@ class _TodoScreenState extends State<TodoScreen> {
     DateTime now = DateTime.now();
 
     String readableYear = DateFormat('yyyy').format(now);
-    String readableDate = DateFormat('MMMM d').format(now);
+    String readableDate = DateFormat('MMMM dd').format(now);
+
+    int weekNumber = ((now.day - 1) / 7).floor() + 1;
 
     return Scaffold(
       backgroundColor: AppTheme.primaryBlack,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // --- Header ---
@@ -43,7 +46,7 @@ class _TodoScreenState extends State<TodoScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
-                  '$readableYear, \n$readableDate',
+                  '$readableYear, \n$readableDate, Week $weekNumber',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: AppTheme.secondaryLightGray,
                     fontWeight: FontWeight.bold,
