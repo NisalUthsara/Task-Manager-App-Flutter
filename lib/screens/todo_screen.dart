@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:task_manager_app_flutter/theme.dart';
+import 'package:task_manager_app_flutter/widgets/todo_card.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -23,6 +24,22 @@ class _TodoScreenState extends State<TodoScreen> {
     'SATURDAY',
     'SUNDAY',
   ];
+
+  final Map<String, List<String>> _allTasks = {
+    'MONDAY': [],
+    'TUESDAY': [],
+    'WEDNESDAY': [],
+    'THURSDAY': [],
+    'FRIDAY': [],
+    'SATURDAY': [],
+    'SUNDAY': [],
+  };
+
+  void _handleAddTask(String day, String newTask) {
+    setState(() {
+      _allTasks[day]?.add(newTask);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +124,10 @@ class _TodoScreenState extends State<TodoScreen> {
   ) {
     final bool isExpanded = (index == _expandedIndex);
 
+    final String currentDayName = _cardNames[index];
+
+    final List<String> tasksForThisDay = _allTasks[currentDayName] ?? [];
+
     // INVERTED LOGIC:
     double reversedIndex = (_cardCount - 1 - index).toDouble();
     double bottomPosition = reversedIndex * verticalOffset;
@@ -168,23 +189,19 @@ class _TodoScreenState extends State<TodoScreen> {
                 if (isExpanded) ...[
                   const SizedBox(height: 20),
                   Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildDummyTaskItem(
-                            "Meeting with Design Team",
-                            "10:00 AM",
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: TodoCard(
+                            taskName: currentDayName,
+                            tasks: tasksForThisDay,
+                            onAddTask: (newTask) {
+                              _handleAddTask(currentDayName, newTask);
+                            },
                           ),
-                          _buildDummyTaskItem("Lunch Break", "01:00 PM"),
-                          _buildDummyTaskItem(
-                            "Flutter Project Review",
-                            "03:30 PM",
-                          ),
-                          _buildDummyTaskItem("Gym", "06:00 PM"),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -196,40 +213,40 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
-  Widget _buildDummyTaskItem(String title, String time) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.check_circle_outline,
-            size: 20,
-            color: AppTheme.secondaryDarkGray,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.secondaryDarkGray,
-              ),
-            ),
-          ),
-          Text(
-            time,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.secondaryDarkGray.withOpacity(0.6),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildDummyTaskItem(String title, String time) {
+  //   return Container(
+  //     margin: const EdgeInsets.only(bottom: 12),
+  //     padding: const EdgeInsets.all(12),
+  //     decoration: BoxDecoration(
+  //       color: Colors.black.withOpacity(0.1),
+  //       borderRadius: BorderRadius.circular(12),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         Icon(
+  //           Icons.check_circle_outline,
+  //           size: 20,
+  //           color: AppTheme.secondaryDarkGray,
+  //         ),
+  //         const SizedBox(width: 10),
+  //         Expanded(
+  //           child: Text(
+  //             title,
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.w600,
+  //               color: AppTheme.secondaryDarkGray,
+  //             ),
+  //           ),
+  //         ),
+  //         Text(
+  //           time,
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.bold,
+  //             color: AppTheme.secondaryDarkGray.withOpacity(0.6),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
