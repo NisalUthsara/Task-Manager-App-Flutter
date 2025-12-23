@@ -52,6 +52,7 @@ class _TodoScreenState extends State<TodoScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.primaryBlack,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -74,23 +75,18 @@ class _TodoScreenState extends State<TodoScreen> {
             ),
 
             // --- Responsive Stack Area ---
-            // Expanded takes up ALL remaining vertical space.
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  // We get the exact height available for the cards
                   double availableHeight = constraints.maxHeight;
 
-                  // DYNAMIC SIZING CALCULATIONS:
-                  // 1. Calculate offset to ensure all 7 cards fit exactly in the space
-                  //    We divide by slightly more than card count to leave a gap at the top.
+                  //Calculate offset to ensure all 7 cards fit exactly in the space
+                  //divide by slightly more than card count to leave a gap at the top.
                   double verticalOffset = availableHeight / (_cardCount + 1);
 
-                  // 2. Dynamic card heights based on screen size
-                  double standardHeight =
-                      availableHeight * 0.20; // ~25% of screen
-                  double expandedHeight =
-                      availableHeight * 0.45; // ~55% of screen
+                  //Dynamic card heights based on screen size
+                  double standardHeight = availableHeight * 0.20;
+                  double expandedHeight = availableHeight * 0.45;
 
                   return GestureDetector(
                     onTap: () => setState(() => _expandedIndex = null),
@@ -128,21 +124,17 @@ class _TodoScreenState extends State<TodoScreen> {
 
     final List<String> tasksForThisDay = _allTasks[currentDayName] ?? [];
 
-    // INVERTED LOGIC:
     double reversedIndex = (_cardCount - 1 - index).toDouble();
     double bottomPosition = reversedIndex * verticalOffset;
 
-    // ANIMATION LOGIC:
-    // If a card is expanded, push cards ABOVE it (visually higher) further up.
+    // If a card is expanded, push cards above it further up.
     if (_expandedIndex != null && index < _expandedIndex!) {
-      // We push them up by the difference in height, minus a little overlap adjustment
       bottomPosition += (expandedHeight - standardHeight);
     }
 
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      // We use 'bottom' instead of 'top'
       bottom: bottomPosition,
       left: 0,
       right: 0,
@@ -161,13 +153,12 @@ class _TodoScreenState extends State<TodoScreen> {
             color: isExpanded
                 ? AppTheme.primaryOrange
                 : AppTheme.secondaryDarkGray,
-            // Rounded corners on top only creates the file-folder look
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.3),
                 blurRadius: 10,
-                offset: const Offset(0, -5), // Shadow upwards
+                offset: const Offset(0, -5),
               ),
             ],
           ),
@@ -212,41 +203,4 @@ class _TodoScreenState extends State<TodoScreen> {
       ),
     );
   }
-
-  // Widget _buildDummyTaskItem(String title, String time) {
-  //   return Container(
-  //     margin: const EdgeInsets.only(bottom: 12),
-  //     padding: const EdgeInsets.all(12),
-  //     decoration: BoxDecoration(
-  //       color: Colors.black.withOpacity(0.1),
-  //       borderRadius: BorderRadius.circular(12),
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         Icon(
-  //           Icons.check_circle_outline,
-  //           size: 20,
-  //           color: AppTheme.secondaryDarkGray,
-  //         ),
-  //         const SizedBox(width: 10),
-  //         Expanded(
-  //           child: Text(
-  //             title,
-  //             style: TextStyle(
-  //               fontWeight: FontWeight.w600,
-  //               color: AppTheme.secondaryDarkGray,
-  //             ),
-  //           ),
-  //         ),
-  //         Text(
-  //           time,
-  //           style: TextStyle(
-  //             fontWeight: FontWeight.bold,
-  //             color: AppTheme.secondaryDarkGray.withOpacity(0.6),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }
