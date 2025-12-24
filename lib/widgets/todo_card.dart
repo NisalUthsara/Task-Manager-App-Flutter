@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager_app_flutter/theme.dart';
+import 'package:task_manager_app_flutter/utils/task.dart';
 
 class TodoCard extends StatefulWidget {
   final String taskName;
-  final List<String> tasks;
+  final List<Task> tasks;
   final Function(String) onAddTask;
+  final Function(int index) onToggleTask;
 
   const TodoCard({
     super.key,
     required this.taskName,
     required this.tasks,
     required this.onAddTask,
+    required this.onToggleTask,
   });
 
   @override
@@ -22,7 +25,6 @@ class _TodoCardState extends State<TodoCard> {
 
   void _submit() {
     if (_controller.text.isEmpty) return;
-
     widget.onAddTask(_controller.text);
     _controller.clear();
   }
@@ -42,7 +44,7 @@ class _TodoCardState extends State<TodoCard> {
           style: TextStyle(color: AppTheme.secondaryDarkGray),
           decoration: InputDecoration(
             border: const UnderlineInputBorder(),
-            labelText: 'Add a task for ${widget.taskName}',
+            labelText: 'Add a task',
             labelStyle: TextStyle(
               color: AppTheme.secondaryDarkGray.withOpacity(0.6),
             ),
@@ -54,7 +56,7 @@ class _TodoCardState extends State<TodoCard> {
           onSubmitted: (_) => _submit(),
         ),
 
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
 
         Expanded(
           child: widget.tasks.isEmpty
@@ -67,13 +69,12 @@ class _TodoCardState extends State<TodoCard> {
                   ),
                 )
               : ListView.builder(
-                  // BouncingScrollPhysics gives it that nice iOS "spring" feel
                   physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(
-                    bottom: 20,
-                  ), // Padding for bottom of list
+                  padding: const EdgeInsets.only(bottom: 20),
                   itemCount: widget.tasks.length,
                   itemBuilder: (context, index) {
+                    final task = widget.tasks[index];
+
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(12),
@@ -83,18 +84,34 @@ class _TodoCardState extends State<TodoCard> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.check_circle_outline,
-                            size: 20,
-                            color: AppTheme.secondaryDarkGray,
+                          GestureDetector(
+                            onTap: () {
+                              widget.onToggleTask(index);
+                            },
+                            child: Icon(
+                              task.isCompleted
+                                  ? Icons.check_circle
+                                  : Icons.circle_outlined,
+                              size: 24,
+                              color: task.isCompleted
+                                  ? AppTheme.secondaryDarkGray
+                                  : AppTheme.secondaryDarkGray.withOpacity(0.5),
+                            ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              widget.tasks[index],
+                              task.name,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.secondaryDarkGray,
+                                color: task.isCompleted
+                                    ? AppTheme.secondaryDarkGray.withOpacity(
+                                        0.5,
+                                      )
+                                    : AppTheme.secondaryDarkGray,
+                                decoration: task.isCompleted
+                                    ? TextDecoration.lineThrough
+                                    : null,
                               ),
                             ),
                           ),

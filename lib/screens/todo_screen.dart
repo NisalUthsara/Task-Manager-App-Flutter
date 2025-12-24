@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:task_manager_app_flutter/theme.dart';
 import 'package:task_manager_app_flutter/widgets/todo_card.dart';
+import 'package:task_manager_app_flutter/utils/task.dart';
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({super.key});
@@ -25,7 +26,7 @@ class _TodoScreenState extends State<TodoScreen> {
     'SUNDAY',
   ];
 
-  final Map<String, List<String>> _allTasks = {
+  Map<String, List<Task>> allTask = {
     'MONDAY': [],
     'TUESDAY': [],
     'WEDNESDAY': [],
@@ -35,19 +36,17 @@ class _TodoScreenState extends State<TodoScreen> {
     'SUNDAY': [],
   };
 
-  void _handleAddTask(String day, String newTask) {
+  void _handleAddTask(String day, String taskName) {
     setState(() {
-      _allTasks[day]?.add(newTask);
+      allTask[day]?.add(Task(name: taskName, isCompleted: false));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     DateTime now = DateTime.now();
-
     String readableYear = DateFormat('yyyy').format(now);
     String readableDate = DateFormat('MMMM dd').format(now);
-
     int weekNumber = ((now.day - 1) / 7).floor() + 1;
 
     return Scaffold(
@@ -57,7 +56,6 @@ class _TodoScreenState extends State<TodoScreen> {
         bottom: false,
         child: Column(
           children: [
-            // --- Header ---
             SizedBox(
               height: 110,
               width: double.infinity,
@@ -74,17 +72,11 @@ class _TodoScreenState extends State<TodoScreen> {
               ),
             ),
 
-            // --- Responsive Stack Area ---
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   double availableHeight = constraints.maxHeight;
-
-                  //Calculate offset to ensure all 7 cards fit exactly in the space
-                  //divide by slightly more than card count to leave a gap at the top.
                   double verticalOffset = availableHeight / (_cardCount + 1);
-
-                  //Dynamic card heights based on screen size
                   double standardHeight = availableHeight * 0.20;
                   double expandedHeight = availableHeight * 0.45;
 
@@ -119,15 +111,12 @@ class _TodoScreenState extends State<TodoScreen> {
     double expandedHeight,
   ) {
     final bool isExpanded = (index == _expandedIndex);
-
     final String currentDayName = _cardNames[index];
-
-    final List<String> tasksForThisDay = _allTasks[currentDayName] ?? [];
+    final List<Task> tasksForThisDay = allTask[currentDayName] ?? [];
 
     double reversedIndex = (_cardCount - 1 - index).toDouble();
     double bottomPosition = reversedIndex * verticalOffset;
 
-    // If a card is expanded, push cards above it further up.
     if (_expandedIndex != null && index < _expandedIndex!) {
       bottomPosition += (expandedHeight - standardHeight);
     }
@@ -187,8 +176,14 @@ class _TodoScreenState extends State<TodoScreen> {
                           child: TodoCard(
                             taskName: currentDayName,
                             tasks: tasksForThisDay,
-                            onAddTask: (newTask) {
-                              _handleAddTask(currentDayName, newTask);
+                            onAddTask: (newTaskName) {
+                              _handleAddTask(currentDayName, newTaskName);
+                            },
+                            onToggleTask: (index) {
+                              setState(() {
+                                var task = allTask[currentDayName]![index];
+                                task.isCompleted = !task.isCompleted;
+                              });
                             },
                           ),
                         ),
